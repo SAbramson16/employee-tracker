@@ -13,4 +13,3 @@ const db = mysql.createConnection(
 const cli = new CLI(db);
 
 cli.run();
-
