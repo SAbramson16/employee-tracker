@@ -20,7 +20,6 @@ let addRole = 'Add a role';
 let addEmployee = 'Add an employee'; 
 let updateEmployeeRole = 'Update an employee role';
 
-
 const questions = [
     {
         type: 'list',
@@ -36,13 +35,106 @@ const addDep =[
         name: 'addDepartment',
         message: 'Please enter a department to add.',
     },
-]
+];
+
+
 
 class CLI {
     constructor(db) {
         this.db = new Database(db);
     }
+
+    rolePrompt(rows) {
+        const addJobRole =[
+            {
+                type: 'input',
+                name: 'addRoleName',
+                message: 'Please enter a job role.',
+            },
+            {
+                type: 'input',
+                name: 'addRoleSalary',
+                message: 'Please enter a salary for added role',
+            },
+            {
+                type: 'list',
+                name: 'depOptions',
+                message: 'Please select a department for the added role.',
+                choices: rows,
+            }
+        ];            
+
+        return inquirer.prompt(addJobRole)
+            .then((answers) => {
+                console.log(answers);
+                let dept = rows.find(row => row.name === answers.depOptions)
+                this.db.addRole(answers.addRoleName, answers.addRoleSalary, dept.id)
+                .then(() => {
+                    this.run();
+                }); 
+            });
+    }
+
+    employeePrompt(roles, empNames) {
+        roles.forEach(role => {
+            Object.assign(role, { name: role.title });
+            delete role.title;
+        });
+        empNames.forEach(emp => {
+            Object.assign(emp, { name: emp.first_name + " " + emp.last_name });
+            delete emp.first_name;
+            delete emp.last_name;
+        });
+        empNames.push({
+           name: "NULL" 
+        });
+
+        const addNewEmployee = [
+            {
+                type: 'input',
+                name: 'firstName',
+                message: 'Please enter employees first name.',
+            },
+            {
+                type: 'input',
+                name: 'lastName',
+                message: 'Please enter employees last name.',
+            },
+            {
+                type: 'list',
+                name: 'roleOptions',
+                message: 'Please select a job role for new Employee.',
+                choices: roles
+            },
+            {
+                type: 'list',
+                name: 'managerOptions',
+                message: 'Please select a manager for new Employee (or NULL).',
+                choices: empNames
+            },
+        ];
+        return inquirer.prompt(addNewEmployee)
+            .then((answers) => {
+                console.log(answers);
+                let role = roles.find(row => row.name === answers.roleOptions);
+                if (answers.managerOptions === "NULL") {
+                    this.db.addEmployee(answers.firstName, answers.lastName, role.id, "NULL")
+                    .then(() => {
+                        this.run();
+                    });    
+                } else {
+                    let manager = empNames.find(row => row.name === answers.managerOptions);
+                    this.db.addEmployee(answers.firstName, answers.lastName, role.id, manager.id)
+                    .then(() => {
+                        this.run();
+                    }); 
+                }
+                
+            });
+    }
+
     run() {
+        
         return inquirer.prompt(questions)
         .then ((answer) => {
             // console.log(answer);
@@ -50,25 +142,47 @@ class CLI {
             switch(answer.options) {
                 //View all departments
                 case viewDepartments:
-                    this.db.displayDepartments();
+                    this.db.displayDepartments()
+                    .then((rows) => {
+                        console.table(rows);
+                        this.run();
+                    }); 
                     break;
                 case viewRoles:
-                    this.db.displayRoles();
+                    this.db.displayRoles()
+                    .then((rows) => {
+                        console.table(rows);
+                        this.run();
+                    });
                     break;
                 case viewEmployees:
-                    this.db.displayEmployees();
+                    this.db.displayEmployees()
+                    .then(() => {
+                        this.run();
+                    });
                     break;
                 case addDepartment: 
-                    let addDepPrompt = inquirer.prompt(addDep)
+                    inquirer.prompt(addDep)
                     .then((answer) => {     
-                        this.db.addDepartment(answer.addDepartment);        
+                        this.db.addDepartment(answer.addDepartment)
+                        .then(() => {
+                            this.run();
+                        });       
                     });
                     break;
                 case addRole:
-                    this.db.addRole();
+                    this.db.displayDepartments()
+                    .then((rows) => {
+                        this.rolePrompt(rows);
+                    }); 
                     break;
                 case addEmployee:
-                    this.db.addEmployee();
+                    this.db.getRoleTitles().then((roles) => {
+                        this.db.getEmployeeNames().then((names) => {
+                            this.employeePrompt(roles, names);
+                        })
+                        
+                    });
                     break;
                 case updateEmployeeRole:
                     this.db.updateRole();
