@@ -65,8 +65,7 @@ class Database {
            reject(err);
         } 
         else {
-            console.table(rows);
-            resolve();
+            resolve(rows);
            }
         })
     });
@@ -133,7 +132,23 @@ class Database {
                 }
             });
         })
-        };
+    }
+
+    updateRole(roleID, employeeID) {
+        return new Promise ((resolve, reject) => {
+            const sql = `UPDATE employee SET role_id = "${roleID}" WHERE id = ${employeeID} `;
+            this.database.query(sql, (err, rows) => {
+                if (err) {
+                console.log("error: ", err);
+                reject(err);
+                }
+                else {
+                    console.log("--Employee successfully updated!--");
+                    resolve();
+                }
+            });
+        })
+    }
 };
 
 module.exports = Database;

@@ -133,6 +133,51 @@ class CLI {
             });
     }
 
+    updatePrompt(roles, empNames) {
+        roles.forEach(role => {
+            Object.assign(role, { name: role.title });
+            delete role.title;
+        });
+        empNames.forEach(emp => {
+            Object.assign(emp, { name: emp.first_name + " " + emp.last_name });
+            delete emp.first_name;
+            delete emp.last_name;
+        });
+        empNames.push({
+           name: "NULL" 
+        });
+
+        const update = [
+            {
+                type: 'list',
+                name: 'employeeList',
+                message: 'Please select an employee to update.',
+                choices: empNames
+            },
+            {
+                type: 'list',
+                name: 'roleList',
+                message: 'What role would you like to assign to this employee?',
+                choices: roles
+            },
+        ];
+        
+        return inquirer.prompt(update)
+        .then ((answer) => {
+            let role = roles.find(row => row.name === answer.roleList);
+            let employee = empNames.find(row => row.name === answer.employeeList);
+            console.log(answer);
+            this.db.updateRole(role.id, employee.id)
+            .then(() => {
+                this.run();
+            })
+            .catch((err) => {
+                console.error(err);
+                this.run();
+            });
+        });
+    }
+
     run() {
         
         return inquirer.prompt(questions)
@@ -157,7 +202,8 @@ class CLI {
                     break;
                 case viewEmployees:
                     this.db.displayEmployees()
-                    .then(() => {
+                    .then((rows) => {
+                        console.table(rows);
                         this.run();
                     });
                     break;
@@ -185,7 +231,11 @@ class CLI {
                     });
                     break;
                 case updateEmployeeRole:
-                    this.db.updateRole();
+                    this.db.getEmployeeNames().then((employeeNames) => {
+                        this.db.getRoleTitles().then((roles) => {
+                            this.updatePrompt(roles, employeeNames);
+                        })
+                    });
                     break;
             }
         }) 
