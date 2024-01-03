@@ -13,6 +13,7 @@ let actions = [
     'Update an employees manager'
 ]
 
+// save each action into a variable for readibility.
 let viewDepartments = 'View all departments';
 let viewRoles = 'View all roles'; 
 let viewEmployees = 'View all employees'; 
@@ -76,6 +77,7 @@ class CLI {
             });
     }
 
+    //for each role and employee name, assigning new object to follow desired format
     employeePrompt(roles, empNames) {
         roles.forEach(role => {
             Object.assign(role, { name: role.title });
@@ -86,6 +88,7 @@ class CLI {
             delete emp.first_name;
             delete emp.last_name;
         });
+        //add "null" to list of manager options
         empNames.push({
            name: "NULL" 
         });
@@ -114,6 +117,7 @@ class CLI {
                 choices: empNames
             },
         ];
+        //finds the role and manager based on user selection and returns the selected item
         return inquirer.prompt(addNewEmployee)
             .then((answers) => {
                 console.log(answers);
@@ -163,6 +167,7 @@ class CLI {
             },
         ];
         
+        // calls the updateRole function from the database.js
         return inquirer.prompt(update)
         .then ((answer) => {
             let role = roles.find(row => row.name === answer.roleList);
@@ -229,7 +234,7 @@ class CLI {
             // console.log(answer);
 
             switch(answer.options) {
-                //View all departments
+                //call this.run after each case to display the first set of questions 
                 case viewDepartments:
                     this.db.displayDepartments()
                     .then((rows) => {

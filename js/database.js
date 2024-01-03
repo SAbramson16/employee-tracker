@@ -3,6 +3,7 @@ class Database {
         this.database = database;
     }
     
+    //query for selecting all data from department table
    displayDepartments() {
         return new Promise((resolve, reject) => {
             const sql = `SELECT * FROM department`;
@@ -48,6 +49,7 @@ class Database {
         });
     } 
    
+    //selects data from employee table, and joins with items from role and department tables, returns a table of all the desired information
    displayEmployees() {
     return new Promise((resolve, reject) => {
     const sql = `SELECT 
@@ -71,6 +73,7 @@ class Database {
     });
     }; 
 
+    // selects only id, first name and last name from employee table
     getEmployeeNames() {
         return new Promise((resolve, reject) => {
             const sql = `SELECT id, first_name, last_name FROM employee`;
@@ -86,6 +89,7 @@ class Database {
         });
     }
 
+    //selects id, first name and last name from employee table where the manager id is set to "null", (if manager id is "null", then that employee is a manager.)
     getManagerNames() {
         return new Promise((resolve, reject) => {
             const sql = `SELECT id, first_name, last_name FROM employee WHERE manager_id IS NULL`;
@@ -102,6 +106,7 @@ class Database {
         });
     }
    
+    //inserts user inputed department name into department table
    addDepartment(departmentName) {
     return new Promise ((resolve, reject) => {
         const sql = `INSERT INTO department (name) VALUE ("${departmentName}")`;
@@ -118,6 +123,7 @@ class Database {
     })
     };
 
+    //inserts user inputed role and salary into role table
     addRole(roleName, roleSalary, roleDep) {
         return new Promise ((resolve, reject) => {
             const sql = `INSERT INTO role (title, salary, department_id) VALUE ("${roleName}", "${roleSalary}", "${roleDep}")`;
@@ -134,6 +140,7 @@ class Database {
         })
     }
 
+    //inserts new employee information into employee table
     addEmployee(firstName, lastName, newRole, managerId) {
         return new Promise ((resolve, reject) => {
             const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUE ("${firstName}", "${lastName}", "${newRole}", ` + (managerId == "NULL" ? `NULL` : `"` + managerId + `"`) + `)`;
@@ -150,6 +157,7 @@ class Database {
         })
     }
 
+    //allows user to update employee information
     updateRole(roleID, employeeID) {
         return new Promise ((resolve, reject) => {
             const sql = `UPDATE employee SET role_id = "${roleID}" WHERE id = ${employeeID} `;
@@ -166,6 +174,7 @@ class Database {
         })
     }
 
+    //allows user to update an employees manager
     updateEmpMgr(managerID, employeeID) {
         return new Promise ((resolve, reject) => {
             const sql = `UPDATE employee SET manager_id = "${managerID}" WHERE id = ${employeeID} `;
