@@ -99,7 +99,6 @@ class Database {
                     reject(err);
                 }
                 else {
-                    console.log(rows)
                     resolve(rows);
                 }
             });

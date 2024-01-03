@@ -11,7 +11,7 @@ The database files are located in the db folder in the root directory. The scrip
 ## Usage
 The user will launch this application by entering "npm start" in the command line of the terminal. Prompts will appear for the user to select which action they would like to complete. Once the user selects and completes an action, a confirmation notice will appear that says if the action has been successful. A demonstration video is included.
  
-Follow the link for a video demonstration of the application being used: 
+Follow the link for a video demonstration of the application being used: https://drive.google.com/file/d/14cqS4adv-N9hgT42FDJjQmoMoK1AFiwq/view
 
 ## Credits
 

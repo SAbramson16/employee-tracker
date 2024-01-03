@@ -68,7 +68,7 @@ class CLI {
 
         return inquirer.prompt(addJobRole)
             .then((answers) => {
-                console.log(answers);
+                // console.log(answers);
                 let dept = rows.find(row => row.name === answers.depOptions)
                 this.db.addRole(answers.addRoleName, answers.addRoleSalary, dept.id)
                 .then(() => {
@@ -120,7 +120,7 @@ class CLI {
         //finds the role and manager based on user selection and returns the selected item
         return inquirer.prompt(addNewEmployee)
             .then((answers) => {
-                console.log(answers);
+                // console.log(answers);
                 let role = roles.find(row => row.name === answers.roleOptions);
                 if (answers.managerOptions === "NULL") {
                     this.db.addEmployee(answers.firstName, answers.lastName, role.id, "NULL")
@@ -172,7 +172,7 @@ class CLI {
         .then ((answer) => {
             let role = roles.find(row => row.name === answer.roleList);
             let employee = empNames.find(row => row.name === answer.employeeList);
-            console.log(answer);
+            // console.log(answer);
             this.db.updateRole(role.id, employee.id)
             .then(() => {
                 this.run();
