@@ -9,7 +9,8 @@ let actions = [
     'Add a department', 
     'Add a role', 
     'Add an employee', 
-    'Update an employee role'
+    'Update an employee role',
+    'Update an employees manager'
 ]
 
 let viewDepartments = 'View all departments';
@@ -19,6 +20,7 @@ let addDepartment = 'Add a department';
 let addRole = 'Add a role'; 
 let addEmployee = 'Add an employee'; 
 let updateEmployeeRole = 'Update an employee role';
+let updateEmployeeMgr = 'Update an employees manager';
 
 const questions = [
     {
@@ -36,7 +38,6 @@ const addDep =[
         message: 'Please enter a department to add.',
     },
 ];
-
 
 
 class CLI {
@@ -178,6 +179,49 @@ class CLI {
         });
     }
 
+    updateManagerPrompt(empNames, managerNames) {
+        empNames.forEach(emp => {
+            Object.assign(emp, { name: emp.first_name + " " + emp.last_name });
+            delete emp.first_name;
+            delete emp.last_name;
+        });
+        managerNames.forEach(manager => {
+            Object.assign(manager, { name: manager.first_name + " " + manager.last_name });
+            delete manager.first_name;
+            delete manager.last_name;
+        });
+
+        const updateMgr = [
+            {
+                type: 'list',
+                name: 'employeeList',
+                message: 'Which employee would you like to have a new manager?.',
+                choices: empNames
+            },
+            {
+                type: 'list',
+                name: 'managerList',
+                message: 'Please select a manager. ',
+                choices: managerNames
+            },
+        ];
+
+        return inquirer.prompt(updateMgr)
+        .then ((answer) => {
+            let manager = managerNames.find(row => row.name === answer.managerList);
+            let employee = empNames.find(row => row.name === answer.employeeList);
+            return this.db.updateEmpMgr(manager.id, employee.id)
+            .then(() => {
+                this.run();
+            })
+            .catch((err) => {
+                console.error(err);
+                this.run();
+            });
+        });
+        
+    }
+
     run() {
         
         return inquirer.prompt(questions)
@@ -234,6 +278,13 @@ class CLI {
                     this.db.getEmployeeNames().then((employeeNames) => {
                         this.db.getRoleTitles().then((roles) => {
                             this.updatePrompt(roles, employeeNames);
+                        })
+                    });
+                    break;
+                case updateEmployeeMgr:
+                    this.db.getEmployeeNames().then ((employeeNames) => {
+                        this.db.getManagerNames().then ((managerNames) => {
+                            this.updateManagerPrompt(employeeNames, managerNames);
                         })
                     });
                     break;

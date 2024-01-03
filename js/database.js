@@ -85,6 +85,22 @@ class Database {
             }); 
         });
     }
+
+    getManagerNames() {
+        return new Promise((resolve, reject) => {
+            const sql = `SELECT id, first_name, last_name FROM employee WHERE manager_id IS NULL`;
+            this.database.query(sql, (err, rows) => {
+                if (err) {
+                    console.log("error: ", err);
+                    reject(err);
+                }
+                else {
+                    console.log(rows)
+                    resolve(rows);
+                }
+            });
+        });
+    }
    
    addDepartment(departmentName) {
     return new Promise ((resolve, reject) => {
@@ -144,6 +160,22 @@ class Database {
                 }
                 else {
                     console.log("--Employee successfully updated!--");
+                    resolve();
+                }
+            });
+        })
+    }
+
+    updateEmpMgr(managerID, employeeID) {
+        return new Promise ((resolve, reject) => {
+            const sql = `UPDATE employee SET manager_id = "${managerID}" WHERE id = ${employeeID} `;
+            this.database.query(sql, (err, rows) => {
+                if (err) {
+                console.log("error: ", err);
+                reject(err);
+                }
+                else {
+                    console.log("--Employee's manager successfully updated!--");
                     resolve();
                 }
             });

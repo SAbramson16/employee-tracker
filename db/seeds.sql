@@ -19,7 +19,7 @@ VALUES ("Gunther", "Perk", 1, null),
        ("Rachel", "Green", 2, 1),
        ("Joey", "Tribiani", 7, null),
        ("Ross", "Geller", 4, null), 
-       ("Phoebe", "Buffet", 5, 3), 
+       ("Phoebe", "Buffet", 5, null), 
        ("Monica", "Heckler", 3, 5),
        ("Chandler", "Bing", 6, 5);
        
